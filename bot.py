@@ -102,10 +102,19 @@ async def on_message(message):
                 await message.channel.send(f'We are a draw, so I take it as my win, {message.author.name}')
             elif (v == -1):
                 await message.channel.send(f'I won against you, {message.author.name}! Pathetic!')
+
+            db_ref = db.collection(u'rps').document()
+            db_ref.set({
+                'channel_id': message.channel.id,
+                'author': { 
+                    'id': message.author.id,
+                    'name': message.author.name,
+                },
+                'value': v,
+            })
         except Exception as e:
             await message.channel.send(str(e))
         
-
     if message.content == '$stop': 
         await message.channel.send('I am leaving.. for now!')
         await client.logout()
