@@ -70,6 +70,16 @@ def calc_rps(user_choice):
     else:
         raise Exception('Invalid choice')
 
+def rps_res(message):
+    rps_games = db.collection('rps')
+    query = rps_games.where('author.id', '==', message.author.id).stream()
+
+    li = []
+    for s in query:
+        li.append(s.to_dict()['value'])
+
+    return 'Stats (Win: {} | Draw: {} | Lose: {})'.format(li.count(1), li.count(0), li.count(-1))
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -79,19 +89,20 @@ async def on_message(message):
         '$hello': f'Hello {message.author.name}!',
         '$fuckoff': f'No no no. How would I dare?!',
         '$roll': f'{message.author.name} got {roll(message)}',
+        '$rps-res': f'{message.author.name} | {rps_res(message)}',
     }
 
     if message.content in messages:
         await message.channel.send(messages[message.content])
 
-    if message.content == '$rollrank': 
+    if message.content == '$roll-rank': 
         top = roll_rank()
 
         for i in range(3):
             nm, vl = top[i]['name'], top[i]['value']
             await message.channel.send(f'{i + 1}. {nm} {vl}')
 
-    if message.content.startswith('$rps'):
+    if message.content.startswith('$rps '):
         choice = message.content.split(' ')[-1]
 
         try:
