@@ -46,6 +46,30 @@ def roll_rank():
 
     return top
 
+def rps():
+    return random.choice(['rock', 'paper', 'scissor'])
+
+def calc_rps(user_choice):
+    bot_choice = rps()
+    user_choice = user_choice.lower()
+
+    if (user_choice == bot_choice): # same
+        return 0
+    if (user_choice == 'rock' and bot_choice == 'paper'):
+        return -1
+    elif (user_choice == 'paper' and bot_choice == 'rock'):
+        return 1
+    elif (user_choice == 'scissor' and bot_choice == 'rock'):
+        return -1
+    elif (user_choice == 'rock' and bot_choice == 'scissor'):
+        return 1
+    elif (user_choice == 'paper' and bot_choice == 'scissor'):
+        return -1
+    elif (user_choice == 'scissor' and bot_choice == 'paper'):
+        return 1
+    else:
+        raise Exception('Invalid choice')
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -66,6 +90,21 @@ async def on_message(message):
         for i in range(3):
             nm, vl = top[i]['name'], top[i]['value']
             await message.channel.send(f'{i + 1}. {nm} {vl}')
+
+    if message.content.startswith('$rps'):
+        choice = message.content.split(' ')[-1]
+
+        try:
+            v = calc_rps(choice)
+            if (v == 1):
+                await message.channel.send(f'How could you win, {message.author.name}?? ')
+            elif (v == 0):
+                await message.channel.send(f'We are a draw, so I take it as my win, {message.author.name}')
+            elif (v == -1):
+                await message.channel.send(f'I won against you, {message.author.name}! Pathetic!')
+        except Exception as e:
+            await message.channel.send(str(e))
+        
 
     if message.content == '$stop': 
         await message.channel.send('I am leaving.. for now!')
