@@ -39,7 +39,7 @@ class Character:
         content = source['content']
         gold = source['gold']
         level = source['level']
-        return Character(author=author, channel=channel, content=content)
+        return Character(author=author, channel=channel, content=content, gold=gold, level=level)
 
     def roll(self, amount, min=1, max=100, cutoff=70, winnings=20, cap=100):
         assert amount >= min, f'You need to bet at least {min} gold!'
