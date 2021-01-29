@@ -174,6 +174,10 @@ async def on_message(message):
                     status = 'won' if roll_val >= cutoff else 'lost'
                     out += f'You {status} {diff}.'
 
+                    db.document(f'fantasi/data/characters/{db_ref.id}').update({
+                        'gold': character.gold
+                    })
+
 
             except ValueError:
                 out += 'Incorrect input. Should be a value!'

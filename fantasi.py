@@ -1,7 +1,7 @@
 import json, random
 
 class Character:
-    def __init__(self, message=None, author=None, channel=None, content=None):
+    def __init__(self, message=None, author=None, channel=None, content=None, gold=None, level=None):
         if message:
             author = User(user=message.author)
             channel = Channel(channel=message.channel)
@@ -13,8 +13,8 @@ class Character:
         self.channel = channel
         self.content = content
 
-        self.gold = 10
-        self.level = 1
+        self.gold = gold if gold else 10
+        self.level = level if level else 1
 
     def __repr__(self):
         return json.dumps(self.to_dict())
@@ -26,14 +26,19 @@ class Character:
         return {
             'author': self.author.to_dict(),
             'channel': self.channel.to_dict(),
-            'content': self.content
+            'content': self.content,
+            'gold': self.gold,
+            'level': self.level,
         }
     
     @staticmethod
     def from_dict(source):
         author = User.from_dict(source['author'])
         channel = Channel.from_dict(source['channel'])
+
         content = source['content']
+        gold = source['gold']
+        level = source['level']
         return Character(author=author, channel=channel, content=content)
 
     def roll(self, amount, min=1, max=100, cutoff=70, winnings=20, cap=100):
