@@ -22,7 +22,7 @@ async def on_ready():
     await client.get_channel(803946625705443358).send("I am backkkk!")
 
 def roll(message):
-    val = random.randint(0, 100)
+    val = random.randint(1, 100)
     
     roll_ref = db.collection(u'rolls').document()
     roll_ref.set({
@@ -82,6 +82,13 @@ def rps_res(message):
 
     return 'Stats (Win: {} | Draw: {} | Lose: {})'.format(li.count(1), li.count(0), li.count(-1))
 
+def f_checkacc(id):
+    try:
+        db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', id).limit(1).stream())
+        return True
+    except StopIteration:
+        return False
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -131,25 +138,55 @@ async def on_message(message):
     if message.content.startswith('$f '):
         opt = message.content.split(' ')[1:]
 
+        has_acc = f_checkacc(id=message.author.id)
+        out = f'{message.author.name} | '
         if opt[0] == 'create':
-            try:
-                db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
-                raise Exception(f'{message.author.name}, you already have an account!')
-            except StopIteration:
+            if not has_acc:
                 db_ref = db.document('fantasi/data').collection('characters').document()
                 db_ref.set(Character(message).to_dict())
-                await message.channel.send(f'Character created for you, {message.author.name}')
-            except Exception as e:
-                await message.channel.send(str(e))
-
-
-        elif opt[0] == 'status':
+                out += 'Character created'
+            else:
+                out += 'You already have an account!'
+        elif opt[0] in ['status', 'roll']: # commands which require account permissions
             try:
-                db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
-                char = Character.from_dict(db_ref.to_dict())
-                await message.channel.send(str(char))
-            except StopIteration:
-                await message.channel.send(f'{message.author.name}, you do not have an account yet!')
+                assert has_acc, await message.channel.send(f'{message.author.name}, you do not have an account yet!')
+
+                db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).limit(1).stream())
+                character = Character.from_dict(db_ref.to_dict())
+                if opt[0] == 'status':
+                    out += str(character)
+                elif opt[0] == 'roll':
+                    assert len(opt) > 1, 'Missing roll value'
+    
+                    val = int(opt[1])
+                    cutoff = 70
+                    roll, diff = character.roll(val, cutoff=cutoff)
+
+                    db.document('fantasi/data').collection('rolls').document().set({
+                        'character_id': db_ref.id,
+                        'roll': roll,
+                        'cutoff': cutoff,
+                        'diff': diff,
+                    })
+                    
+                    out += f'You rolled {roll}. '
+
+                    status = 'won' if roll >= cutoff else 'lost'
+                    out += f'You {status} {diff}.'
+
+
+            except ValueError:
+                out += 'Incorrect input. Should be a value!'
+            except Exception as e:
+                out += str(e)
+            
+        else:
+            out += 'That command cannot be found'
+
+        if out:
+           await message.channel.send(out) 
+            
+                
         
 
     if message.content == '$stop': 
