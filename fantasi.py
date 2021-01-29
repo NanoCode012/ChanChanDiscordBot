@@ -46,7 +46,11 @@ class Character:
         assert amount <= self.gold, 'You do not have enough gold!'
 
         val = random.randint(minimum, maximum)
-        diff = min(int(amount*(1+(winnings/100))), cap) if val >= cutoff else (-amount)
+
+        if val >= cutoff:
+            diff = min(int(amount*(1+(winnings/100))), cap) if amount < cap else amount
+        else:
+            diff = -amount
 
         self.gold += diff
         return val, diff
