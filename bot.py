@@ -160,18 +160,18 @@ async def on_message(message):
     
                     val = int(opt[1])
                     cutoff = 70
-                    roll, diff = character.roll(val, cutoff=cutoff)
+                    roll_val, diff = character.roll(val, cutoff=cutoff)
 
                     db.document('fantasi/data').collection('rolls').document().set({
                         'character_id': db_ref.id,
-                        'roll': roll,
+                        'roll': roll_val,
                         'cutoff': cutoff,
                         'diff': diff,
                     })
-                    
-                    out += f'You rolled {roll}. '
 
-                    status = 'won' if roll >= cutoff else 'lost'
+                    out += f'You rolled {roll_val}. '
+
+                    status = 'won' if roll_val >= cutoff else 'lost'
                     out += f'You {status} {diff}.'
 
 
