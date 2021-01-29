@@ -13,8 +13,8 @@ class Character:
         self.channel = channel
         self.content = content
 
-        self.gold = gold if gold else 10
-        self.level = level if level else 1
+        self.gold = gold if gold is not None else 10
+        self.level = level if level is not None else 1
 
     def __repr__(self):
         return json.dumps(self.to_dict())
