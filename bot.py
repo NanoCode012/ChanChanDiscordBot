@@ -174,7 +174,7 @@ async def on_message(message):
                     status = 'won' if roll_val >= cutoff else 'lost'
                     out += f'You {status} {abs(diff)}.'
 
-                    db_ref.update({
+                    db.document(f'fantasi/data/characters/{db_ref.id}').update({
                         'gold': character.gold
                     })
 
