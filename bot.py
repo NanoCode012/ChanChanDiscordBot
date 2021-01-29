@@ -175,6 +175,10 @@ async def on_message(message):
                     roll_ref = db.document('fantasi/data').collection('rolls').document()
                     batch.set(roll_ref, {
                         'character_id': db_ref.id,
+                        'author': {
+                            'id': message.author.id,
+                            'name': message.author.name,
+                        },
                         'roll': roll_val,
                         'cutoff': cutoff,
                         'diff': diff,
