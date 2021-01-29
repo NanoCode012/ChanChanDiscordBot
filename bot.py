@@ -148,7 +148,7 @@ async def on_message(message):
             else:
                 out += 'You already have an account!'
         elif opt[0] == 'info':
-            out += '\n**Info**\n\n'
+            out += '**Info**\n\n'
             out += 'create: creates a new account\n'
             out += 'status: see status info\n'
             out += 'roll <amount>: roll amount. If win, get at least that amount in return.\n'
