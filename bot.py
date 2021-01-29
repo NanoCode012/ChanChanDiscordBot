@@ -194,4 +194,6 @@ async def on_message(message):
         await message.channel.send('I am leaving.. for now!')
         await client.logout()
 
+    print(message)
+
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
