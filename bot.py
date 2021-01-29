@@ -132,13 +132,24 @@ async def on_message(message):
         opt = message.content.split(' ')[1:]
 
         if opt[0] == 'create':
-            db_ref = db.document('fantasi/data').collection('characters').document()
-            db_ref.set(Character(message).to_dict())
-            await message.channel.send(f'Character created for you, {message.author.name}')
+            try:
+                db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
+                raise Exception(f'{message.author.name}, you already have an account!')
+            except StopIteration:
+                db_ref = db.document('fantasi/data').collection('characters').document()
+                db_ref.set(Character(message).to_dict())
+                await message.channel.send(f'Character created for you, {message.author.name}')
+            except Exception as e:
+                await message.channel.send(str(e))
+
+
         elif opt[0] == 'status':
-            db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
-            char = Character.from_dict(db_ref.to_dict())
-            await message.channel.send(str(char))
+            try:
+                db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
+                char = Character.from_dict(db_ref.to_dict())
+                await message.channel.send(str(char))
+            except StopIteration:
+                await message.channel.send(f'{message.author.name}, you do not have an account yet!')
         
 
     if message.content == '$stop': 
