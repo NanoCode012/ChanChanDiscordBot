@@ -166,22 +166,26 @@ async def on_message(message):
                     val = int(opt[1])
                     cutoff = 60
                     roll_val, diff = character.roll(val, cutoff=cutoff)
+                    out += f'You rolled {roll_val}. '
 
-                    db.document('fantasi/data').collection('rolls').document().set({
+                    status = 'won' if diff > 0 else 'lost'
+                    out += f'You {status} {abs(diff)}.'
+
+                    batch = db.batch()
+                    roll_ref = db.document('fantasi/data').collection('rolls').document()
+                    batch.set(roll_ref, {
                         'character_id': db_ref.id,
                         'roll': roll_val,
                         'cutoff': cutoff,
                         'diff': diff,
                     })
 
-                    out += f'You rolled {roll_val}. '
-
-                    status = 'won' if roll_val >= cutoff else 'lost'
-                    out += f'You {status} {abs(diff)}.'
-
-                    db.document(f'fantasi/data/characters/{db_ref.id}').update({
+                    gold_ref = db.document(f'fantasi/data/characters/{db_ref.id}')
+                    batch.update(gold_ref, {
                         'gold': character.gold
                     })
+
+                    batch.commit()
 
             except ValueError:
                 out += 'Incorrect input. Should be a value!'
