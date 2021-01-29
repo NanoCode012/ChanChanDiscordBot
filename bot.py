@@ -6,6 +6,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
+from fantasi import *
+
 # Use a service account
 cred = credentials.Certificate('siit-293014-firebase-adminsdk-427ti-ca473c1b7a.json')
 firebase_admin.initialize_app(cred)
@@ -126,6 +128,18 @@ async def on_message(message):
         except Exception as e:
             await message.channel.send(str(e))
         
+    if message.content.startswith('$f '):
+        opt = message.content.split(' ')[1:]
+
+        if opt[0] == 'create':
+            db_ref = db.document('fantasi/data').collection('characters').document()
+            db_ref.set(Character(message).to_dict())
+        elif opt[0] == 'status':
+            db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
+            char = Character.from_dict(db_ref.to_dict())
+            print(char)
+        
+
     if message.content == '$stop': 
         await message.channel.send('I am leaving.. for now!')
         await client.logout()
