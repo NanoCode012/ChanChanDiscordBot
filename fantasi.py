@@ -41,11 +41,11 @@ class Character:
         level = source['level']
         return Character(author=author, channel=channel, content=content, gold=gold, level=level)
 
-    def roll(self, amount, min=1, max=100, cutoff=70, winnings=20, cap=100):
-        assert amount >= min, f'You need to bet at least {min} gold!'
+    def roll(self, amount, minimum=1, maximum=100, cutoff=70, winnings=20, cap=100):
+        assert amount >= minimum, f'You need to bet at least {minimum} gold!'
         assert amount <= self.gold, 'You do not have enough gold!'
 
-        val = random.randint(min, max)
+        val = random.randint(minimum, maximum)
         diff = min(int(amount*(1+(winnings/100))), cap) if val >= cutoff else (-amount)
 
         self.gold += diff
