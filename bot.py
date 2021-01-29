@@ -147,6 +147,11 @@ async def on_message(message):
                 out += 'Character created'
             else:
                 out += 'You already have an account!'
+        elif opt[0] == 'info':
+            out += '\n**Info**\n\n'
+            out += 'create: creates a new account\n'
+            out += 'status: see status info\n'
+            out += 'roll <amount>: roll amount. If win, get at least that amount in return.\n'
         elif opt[0] in ['status', 'roll']: # commands which require account permissions
             try:
                 assert has_acc, 'You do not have an account yet!'
@@ -159,7 +164,7 @@ async def on_message(message):
                     assert len(opt) > 1, 'Missing roll value'
     
                     val = int(opt[1])
-                    cutoff = 70
+                    cutoff = 60
                     roll_val, diff = character.roll(val, cutoff=cutoff)
 
                     db.document('fantasi/data').collection('rolls').document().set({
