@@ -134,10 +134,11 @@ async def on_message(message):
         if opt[0] == 'create':
             db_ref = db.document('fantasi/data').collection('characters').document()
             db_ref.set(Character(message).to_dict())
+            await message.channel.send(f'Character created for you, {message.author.id}')
         elif opt[0] == 'status':
             db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).stream())
             char = Character.from_dict(db_ref.to_dict())
-            print(char)
+            await message.channel.send(str(char))
         
 
     if message.content == '$stop': 
