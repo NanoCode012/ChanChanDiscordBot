@@ -149,7 +149,7 @@ async def on_message(message):
                 out += 'You already have an account!'
         elif opt[0] in ['status', 'roll']: # commands which require account permissions
             try:
-                assert has_acc, await message.channel.send(f'{message.author.name}, you do not have an account yet!')
+                assert has_acc, 'You do not have an account yet!'
 
                 db_ref = next(db.document('fantasi/data').collection('characters').where('author.id', '==', message.author.id).limit(1).stream())
                 character = Character.from_dict(db_ref.to_dict())
@@ -178,7 +178,6 @@ async def on_message(message):
                         'gold': character.gold
                     })
 
-
             except ValueError:
                 out += 'Incorrect input. Should be a value!'
             except Exception as e:
@@ -191,23 +190,8 @@ async def on_message(message):
            await message.channel.send(out) 
             
                 
-        
-
     if message.content == '$stop': 
         await message.channel.send('I am leaving.. for now!')
         await client.logout()
-
-    
-    # doc_ref = db.collection(u'messages').document()
-    # doc_ref.set({
-    #     'message_id': message.id,
-    #     'channel_id': message.channel.id,
-    #     'author': { 
-    #         'id': message.author.id,
-    #         'name': message.author.name,
-    #     },
-    #     'content': message.content,
-    # })
-    print(message)
 
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
