@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run via : sudo bash run_docker.sh
 
 echo 'Removing any old containers if exist ..'
 
