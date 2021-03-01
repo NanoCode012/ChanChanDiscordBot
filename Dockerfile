@@ -6,6 +6,4 @@ COPY . /usr/src/app
 
 RUN pip install -qr requirements.txt
 
-RUN source .env
-
 CMD ["python", "bot.py"]
