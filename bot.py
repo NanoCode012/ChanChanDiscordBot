@@ -9,7 +9,7 @@ from firebase_admin import firestore
 from fantasi import *
 
 # Use a service account
-cred = credentials.Certificate('siit-293014-firebase-adminsdk-427ti-ca473c1b7a.json')
+cred = credentials.Certificate('firebase-adminsdk.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
