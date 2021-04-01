@@ -1,6 +1,10 @@
 #!/bin/bash
 # Run via : sudo bash run_docker.sh
 
+echo 'Pulling new commits if exist'
+
+git pull
+
 echo 'Removing any old containers if exist ..'
 
 sudo docker stop chanchan_discordbot || true && sudo docker rm chanchan_discordbot || true
