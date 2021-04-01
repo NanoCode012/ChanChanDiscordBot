@@ -19,7 +19,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    await client.get_channel(803946625705443358).send("I am backkkk!")
+    await client.get_channel(os.getenv("DISCORD_CHANNEL_ID")).send("I am backkkk!")
 
 def roll(message):
     val = random.randint(1, 100)
