@@ -5,7 +5,7 @@ import random
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-from games import fantasi
+from games import fantasi, rps
 
 # Use a service account
 cred = credentials.Certificate("firebase-adminsdk.json")
@@ -55,45 +55,6 @@ def roll_rank():
     return top
 
 
-def rps():
-    return random.choice(["rock", "paper", "scissor"])
-
-
-def calc_rps(user_choice):
-    bot_choice = rps()
-    user_choice = user_choice.lower()
-
-    if user_choice == bot_choice:  # same
-        return 0
-    if user_choice == "rock" and bot_choice == "paper":
-        return -1
-    elif user_choice == "paper" and bot_choice == "rock":
-        return 1
-    elif user_choice == "scissor" and bot_choice == "rock":
-        return -1
-    elif user_choice == "rock" and bot_choice == "scissor":
-        return 1
-    elif user_choice == "paper" and bot_choice == "scissor":
-        return -1
-    elif user_choice == "scissor" and bot_choice == "paper":
-        return 1
-    else:
-        raise Exception("Invalid choice")
-
-
-def rps_res(message):
-    rps_games = db.collection("rps")
-    query = rps_games.where("author.id", "==", message.author.id).stream()
-
-    li = []
-    for s in query:
-        li.append(s.to_dict()["value"])
-
-    return "Stats (Win: {} | Draw: {} | Lose: {})".format(
-        li.count(1), li.count(0), li.count(-1)
-    )
-
-
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -102,12 +63,13 @@ async def on_message(message):
     messages = {
         "$hello": f"Hello {message.author.name}!",
         "$fuckoff": f"No no no. How would I dare?!",
-        "$roll": f"{message.author.name} got {roll(message)}",
-        "$rps-res": f"{message.author.name} | {rps_res(message)}",
     }
 
     if message.content in messages:
         await message.channel.send(messages[message.content])
+
+    if message.content == "$roll":
+        await message.channel.send(f"{message.author.name} got {roll(message)}")
 
     if message.content == "$roll-rank":
         top = roll_rank()
@@ -117,33 +79,7 @@ async def on_message(message):
             await message.channel.send(f"{i + 1}. {nm} {vl}")
 
     if message.content.startswith("$rps "):
-        choice = message.content.split(" ")[-1]
-
-        try:
-            v = calc_rps(choice)
-            if v == 1:
-                await message.channel.send(
-                    f"How could you win, {message.author.name}?? "
-                )
-            elif v == 0:
-                await message.channel.send(
-                    f"We are a draw, so I take it as my win, {message.author.name}"
-                )
-            elif v == -1:
-                await message.channel.send(
-                    f"I won against you, {message.author.name}! Pathetic!"
-                )
-
-            db_ref = db.collection("rps").document()
-            db_ref.set(
-                {
-                    "channel_id": message.channel.id,
-                    "author": {"id": message.author.id, "name": message.author.name,},
-                    "value": v,
-                }
-            )
-        except Exception as e:
-            await message.channel.send(str(e))
+        await rps.handle(db=db, message=message)
 
     if message.content.startswith("$f "):
         await fantasi.handle(db=db, message=message)
