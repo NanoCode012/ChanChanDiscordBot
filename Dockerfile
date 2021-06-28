@@ -8,4 +8,4 @@ RUN pip install -qr requirements.txt
 
 COPY . /usr/src/app
 
-CMD ["python", "bot.py"]
+CMD ["python", "-u", "bot.py"]
