@@ -5,7 +5,7 @@ import random
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-from games import fantasi, rps, rolls
+from games import fantasi, rps, rolls, hi_lo
 
 # Use a service account
 cred = credentials.Certificate("firebase-adminsdk.json")
@@ -32,6 +32,7 @@ async def on_message(message):
         "$fuckoff": f"No no no. How would I dare?!",
     }
 
+    # default messages
     if message.content in messages:
         await message.channel.send(messages[message.content])
 
@@ -43,6 +44,9 @@ async def on_message(message):
 
     if message.content.startswith("$f "):
         await fantasi.handle(db=db, message=message)
+
+    if message.content.startswith("$hl "):
+        await hi_lo.handle(db=db, message=message)
 
     if message.content == "$stop":
         await message.channel.send("I am leaving.. for now!")
