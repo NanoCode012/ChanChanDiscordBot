@@ -17,6 +17,7 @@ async def handle(db, message):
         out += "**Info**\n\n"
         out += "create: creates a new account\n"
         out += "status: see status info\n"
+        out += "info: shows this message\n"
         out += (
             "roll <amount>: roll amount. If win, get at least that amount in return.\n"
         )
