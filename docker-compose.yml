@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  chanchan_discordbot:
+    container_name: chanchan_discordbot
+    build:
+        context: .
+        dockerfile: Dockerfile
+    env_file:
+        - .env
